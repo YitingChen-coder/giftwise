@@ -50,15 +50,18 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
       delivery: typeof r.delivery === "string" ? r.delivery : undefined,
       rating: r.rating,
       reviews: r.reviews,
+      match: matchLevel(query, r.title!),
     }))
     .filter((o) => o.link.startsWith("https://"));
 
   const inBudget = all.filter((o) => o.price <= maxPrice);
+  // When a store has several listings, keep its close match rather than a loosely related item.
+  const ordered = [...inBudget.filter((o) => o.match === "close"), ...inBudget.filter((o) => o.match !== "close")];
 
   // Prefer one offer per retailer so the comparison actually spans stores.
   const seen = new Set<string>();
   const picked: Offer[] = [];
-  for (const o of inBudget) {
+  for (const o of ordered) {
     // "eBay - some_seller" and "eBay" count as the same store.
     const s = o.source.split(" - ")[0].trim().toLowerCase();
     if (seen.has(s)) continue;
@@ -66,7 +69,9 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
     picked.push(o);
     if (picked.length === 6) break;
   }
-  picked.sort((a, b) => a.price - b.price);
+  // Close matches first (cheapest first), then similar items. So the "best price" is never
+  // an accessory or a different product that just happens to be cheaper.
+  picked.sort((a, b) => (a.match === b.match ? 0 : a.match === "close" ? -1 : 1) || a.price - b.price);
 
   return save(key, {
     query,
@@ -80,4 +85,26 @@ function save(key: string, data: Omit<OffersResponse, "cached">): OffersResponse
   // Don't cache empty results: Google sometimes returns nothing for a query that works a minute later.
   if (data.offers.length) cache.set(key, { at: Date.now(), data });
   return { ...data, cached: false };
+}
+
+const STOP = new Set(["the", "and", "for", "with", "set", "kit", "gift", "gifts", "new", "of", "a", "an", "in", "to", "by"]);
+const words = (t: string) =>
+  t
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w && !STOP.has(w) && (w.length > 2 || /\d/.test(w)))
+    .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w));
+
+/**
+ * v1 similarity rule: a listing is a "close" match when its title contains at least
+ * 60% of the search query's key words (model numbers included), otherwise "similar".
+ * E.g. query "insulated gardening gloves": "Women's Insulated Gardening Gloves" is close,
+ * "Garden Kneeler Pad" is similar. It is a word check, not product identity (see the v2 plan).
+ */
+export function matchLevel(query: string, title: string): "close" | "similar" {
+  const q = [...new Set(words(query))];
+  if (!q.length) return "similar";
+  const t = new Set(words(title));
+  const hit = q.filter((w) => t.has(w)).length;
+  return hit / q.length >= 0.6 ? "close" : "similar";
 }

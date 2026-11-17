@@ -22,6 +22,8 @@ export type Offer = {
   rating?: number;
   reviews?: number;
   delivery?: string;
+  /** "close": the title contains most key words of the search; "similar": a related item. */
+  match?: "close" | "similar";
 };
 
 export type OffersResponse = {

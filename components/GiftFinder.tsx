@@ -500,7 +500,9 @@ function OffersPanel({ state, budget }: { state?: OfferState; budget: number }) 
       )}
       <p className="mt-4 text-[11px] leading-relaxed text-muted">
         Prices from Google Shopping (via SerpApi), checked {time}. “View” opens the Google Shopping listing, where you can go to the store.
-        Listings are similar products, not always the identical item. Shipping and tax may not be included.{" "}
+        <strong>Close match</strong> means the listing title contains most key words of this idea; <strong>Similar item</strong> is a
+        related product, so check before you compare. Each store appears once; we don&apos;t yet verify that two stores sell the exact
+        same model. Shipping and tax may not be included.{" "}
         <strong>Price history isn&apos;t available yet</strong>; it&apos;s planned for the next version, and we won&apos;t guess it.
       </p>
     </div>
@@ -518,8 +520,21 @@ function OfferRow({ offer: o, highlight = false }: { offer: OffersResponse["offe
         <div className={`${highlight ? "h-16 w-16" : "h-12 w-12"} shrink-0 rounded-lg bg-ivory`} />
       )}
       <div className="min-w-0 flex-1">
-        {highlight && <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-burgundy">Best price</p>}
-        <p className="truncate text-sm font-semibold text-charcoal">{store}</p>
+        {highlight && (
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-burgundy">
+            {o.match === "close" ? "Best price" : "Lowest price · similar item"}
+          </p>
+        )}
+        <p className="flex items-center gap-2 text-sm font-semibold text-charcoal">
+          <span className="truncate">{store}</span>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+              o.match === "close" ? "bg-forest/10 text-forest" : "bg-line/70 text-muted"
+            }`}
+          >
+            {o.match === "close" ? "Close match" : "Similar item"}
+          </span>
+        </p>
         <p className="truncate text-xs text-muted" title={o.title}>
           {o.title}
         </p>
