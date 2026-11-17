@@ -27,6 +27,7 @@ export default function GiftFinder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [refinement, setRefinement] = useState("");
+  const [lastRefine, setLastRefine] = useState("");
   const [offers, setOffers] = useState<Record<string, OfferState>>({});
   const [open, setOpen] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,7 @@ export default function GiftFinder() {
       setIdeas(data.ideas);
       setOpen(null);
       setRefinement("");
+      setLastRefine(refine ?? "");
       requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -84,6 +86,7 @@ export default function GiftFinder() {
     setOffers({});
     setOpen(null);
     setError("");
+    setLastRefine("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -210,8 +213,16 @@ export default function GiftFinder() {
               Ideas for {prefs.recipient.toLowerCase().startsWith("my ") ? prefs.recipient : `your ${prefs.recipient.toLowerCase()}`}, up to {money(prefs.budget)}
             </h2>
             <p className="mt-1 text-sm text-muted">
-              Pick an idea and tap <strong>Compare prices</strong> to see what real stores charge today.
+              Pick an idea and tap <strong>Compare prices</strong> to see what real stores charge today.{" "}
+              <a href="#refine" className="whitespace-nowrap text-burgundy underline underline-offset-2">
+                Not quite right? Adjust ↓
+              </a>
             </p>
+            {lastRefine && (
+              <p role="status" className="mt-3 inline-block rounded-full bg-gold/20 px-3 py-1 text-sm text-charcoal">
+                ✓ Updated: “{lastRefine}”
+              </p>
+            )}
           </div>
 
           <ol className="space-y-4">
@@ -250,7 +261,7 @@ export default function GiftFinder() {
               e.preventDefault();
               if (refinement.trim()) requestIdeas(prefs, refinement.trim());
             }}
-            className="rounded-2xl border border-dashed border-gold bg-paper p-5 space-y-3"
+            className="rounded-2xl border border-dashed border-gold bg-paper p-5 space-y-3 scroll-mt-6"
           >
             <label htmlFor="refine" className="block font-medium text-forest">
               Not quite right? Tell us what to change.
