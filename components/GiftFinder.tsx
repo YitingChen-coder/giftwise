@@ -499,7 +499,7 @@ function OffersPanel({ state, budget }: { state?: OfferState; budget: number }) 
         </>
       )}
       <p className="mt-4 text-[11px] leading-relaxed text-muted">
-        Prices from Google Shopping (via SerpApi), checked {time}. “View” opens the Google Shopping listing, where you can go to the store.
+        Prices from Google Shopping (via SerpApi), checked {time}. “View” opens the Google Shopping listing, where you can go to the store.{" "}
         <strong>Close match</strong> means the listing title contains most key words of this idea; <strong>Similar item</strong> is a
         related product, so check before you compare. Each store appears once; we don&apos;t yet verify that two stores sell the exact
         same model. Shipping and tax may not be included.{" "}
@@ -525,20 +525,18 @@ function OfferRow({ offer: o, highlight = false }: { offer: OffersResponse["offe
             {o.match === "close" ? "Best price" : "Lowest price · similar item"}
           </p>
         )}
-        <p className="flex items-center gap-2 text-sm font-semibold text-charcoal">
-          <span className="truncate">{store}</span>
+        <p className="truncate text-sm font-semibold text-charcoal">{store}</p>
+        <p className="truncate text-xs text-muted" title={o.title}>
+          {o.title}
+        </p>
+        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
           <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
               o.match === "close" ? "bg-forest/10 text-forest" : "bg-line/70 text-muted"
             }`}
           >
             {o.match === "close" ? "Close match" : "Similar item"}
           </span>
-        </p>
-        <p className="truncate text-xs text-muted" title={o.title}>
-          {o.title}
-        </p>
-        <p className="mt-0.5 flex flex-wrap gap-x-2 text-xs text-muted">
           {o.rating ? (
             <span>
               <span className="text-gold">★</span> {o.rating}
