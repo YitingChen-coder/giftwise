@@ -41,4 +41,5 @@ npm run dev
 - API keys live only in `.env.local` (git-ignored) and Vercel environment variables. All calls to OpenAI and SerpApi happen on the server, so keys never reach the browser.
 - `.claude/settings.json` denies agents read access to `.env*` files.
 - No database in v1, so no row-level security is needed yet. When Supabase arrives in v2, RLS will be turned on for every table.
+- Pre-ship security review: `docs/security-review.md` (no high/medium findings).
 - OpenAI has a monthly spending limit. SerpApi stays on the free plan (~100 searches/month). Both routes are rate-limited per IP.
