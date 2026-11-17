@@ -77,6 +77,7 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
 }
 
 function save(key: string, data: Omit<OffersResponse, "cached">): OffersResponse {
-  cache.set(key, { at: Date.now(), data });
+  // Don't cache empty results: Google sometimes returns nothing for a query that works a minute later.
+  if (data.offers.length) cache.set(key, { at: Date.now(), data });
   return { ...data, cached: false };
 }

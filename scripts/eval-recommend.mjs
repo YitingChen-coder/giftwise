@@ -1,7 +1,7 @@
 // Small recommendation eval against a running GiftWise (local or live).
 // Checks what the proposal said "useful" means: within budget, 5 distinct ideas,
 // reasons tied to what the shopper said, and refinement that actually changes the list.
-// Run: node scripts/eval-recommend.mjs [baseUrl]   (default http://localhost:3000)
+// Run: node scripts/eval-recommend.mjs [baseUrl] [--offers]   (default http://localhost:3000)
 const base = process.argv[2] || "http://localhost:3000";
 
 const cases = [
@@ -41,6 +41,20 @@ for (const c of cases) {
   const r2 = await recommend({ prefs, previous: ideas, refinement: "A bit cheaper" });
   const cheaper = r2.status === 200 && avg(r2.data.ideas.map((i) => i.estPrice)) < avg(ideas.map((i) => i.estPrice));
 
+  // Verified-price coverage: do real store listings exist within budget for the top ideas?
+  // Costs 1 SerpApi search per idea checked, so only runs with --offers.
+  let coverage = "skipped";
+  if (process.argv.includes("--offers")) {
+    let found = 0;
+    const top = ideas.slice(0, 2);
+    for (const i of top) {
+      const r = await fetch(`${base}/api/offers?${new URLSearchParams({ q: i.searchQuery, max: String(prefs.budget) })}`);
+      const d = await r.json();
+      if (r.ok && d.offers.length) found += 1;
+    }
+    coverage = `${found}/${top.length}`;
+  }
+
   rows.push({
     case: label,
     ideas: ideas.length,
@@ -49,6 +63,7 @@ for (const c of cases) {
     distinct: `${distinct}/${ideas.length}`,
     mentionsInterests: `${grounded}/${ideas.length}`,
     refineCheaper: cheaper ? "yes" : "no",
+    realOffersInBudget: coverage,
   });
 }
 console.table(rows);
