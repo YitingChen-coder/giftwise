@@ -6,6 +6,7 @@ AI gift ideas for U.S. holiday shoppers, plus live price comparison across retai
 
 - Live app: https://giftwise-fawn.vercel.app
 - Proposal: https://giftwise-project-proposal.vercel.app
+- v2 plan (from user testing): https://giftwise-project-proposal.vercel.app/v2.html · notes in `docs/user-testing-results.md` · eval in `docs/eval-results.md`
 
 ## What's in v1, and what isn't
 
