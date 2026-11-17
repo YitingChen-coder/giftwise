@@ -32,7 +32,7 @@ npm run dev
 ## How it works
 
 - `app/api/recommend/route.ts` validates input (zod), rate-limits per IP, and calls `lib/recommend.ts`. That file asks OpenAI for 5 ideas in a strict JSON schema, then drops any idea priced over the budget.
-- `app/api/offers/route.ts` calls `lib/offers.ts` (SerpApi `google_shopping`). It runs only when the user taps "Compare prices", which saves the free quota. Results are cached for 6 hours and limited to the budget.
+- `app/api/offers/route.ts` calls `lib/offers.ts` (SerpApi `google_shopping_light`; the older `google_shopping` engine returned no results in Nov 2026). It runs only when the user taps "Compare prices", which saves the free quota. Results are cached for 6 hours and limited to the budget.
 - `components/GiftFinder.tsx` is the whole UI.
 
 ## Security and cost

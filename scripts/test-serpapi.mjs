@@ -4,7 +4,7 @@
 const q = process.argv[2] || "loose leaf tea sampler";
 const url = new URL("https://serpapi.com/search.json");
 url.search = new URLSearchParams({
-  engine: "google_shopping", q, gl: "us", hl: "en", api_key: process.env.SERPAPI_API_KEY ?? "",
+  engine: "google_shopping_light", q, gl: "us", hl: "en", api_key: process.env.SERPAPI_API_KEY ?? "",
 }).toString();
 const res = await fetch(url);
 const data = await res.json();

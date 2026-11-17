@@ -351,6 +351,7 @@ function OffersPanel({ state, budget }: { state?: OfferState; budget: number }) 
                       {o.reviews ? ` (${o.reviews.toLocaleString()})` : ""}
                     </p>
                   ) : null}
+                  {o.delivery && <p className="text-xs text-muted">{o.delivery}</p>}
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="font-semibold text-forest">
@@ -365,7 +366,7 @@ function OffersPanel({ state, budget }: { state?: OfferState; budget: number }) 
                     rel="noopener noreferrer nofollow"
                     className="text-xs text-burgundy underline underline-offset-2"
                   >
-                    View ↗<span className="sr-only"> at {o.source} (opens in new tab)</span>
+                    View offer ↗<span className="sr-only"> from {o.source} on Google Shopping (opens in new tab)</span>
                   </a>
                 </div>
               </li>
@@ -374,7 +375,7 @@ function OffersPanel({ state, budget }: { state?: OfferState; budget: number }) 
         </>
       )}
       <p className="mt-3 text-[11px] leading-relaxed text-muted">
-        Prices from Google Shopping (via SerpApi), checked {time}. Listings are similar products, not always the identical
+        Prices from Google Shopping (via SerpApi), checked {time}. “View offer” opens the Google Shopping listing, where you can go to the store. Listings are similar products, not always the identical
         item. Shipping and tax may not be included. <strong>Price history isn&apos;t available yet</strong>; it&apos;s planned
         for the next version, and we won&apos;t guess it.
       </p>

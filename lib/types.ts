@@ -21,6 +21,7 @@ export type Offer = {
   thumbnail?: string;
   rating?: number;
   reviews?: number;
+  delivery?: string;
 };
 
 export type OffersResponse = {

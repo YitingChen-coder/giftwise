@@ -8,6 +8,8 @@ type SerpShoppingResult = {
   link?: string;
   product_link?: string;
   thumbnail?: string;
+  serpapi_thumbnail?: string;
+  delivery?: string;
   rating?: number;
   reviews?: number;
 };
@@ -24,7 +26,7 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
   if (!apiKey) throw new Error("MISSING_SERPAPI_KEY");
 
   const url = new URL("https://serpapi.com/search.json");
-  url.search = new URLSearchParams({ engine: "google_shopping", q: query, gl: "us", hl: "en", api_key: apiKey }).toString();
+  url.search = new URLSearchParams({ engine: "google_shopping_light", q: query, gl: "us", hl: "en", api_key: apiKey }).toString();
 
   const res = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(20000) });
   const json = (await res.json()) as { error?: string; shopping_results?: SerpShoppingResult[] };
@@ -44,7 +46,8 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
       priceText: r.price ?? `$${r.extracted_price!.toFixed(2)}`,
       source: r.source!,
       link: r.product_link || r.link || "",
-      thumbnail: r.thumbnail,
+      thumbnail: r.serpapi_thumbnail || r.thumbnail,
+      delivery: typeof r.delivery === "string" ? r.delivery : undefined,
       rating: r.rating,
       reviews: r.reviews,
     }))
@@ -56,7 +59,8 @@ export async function findOffers(query: string, maxPrice: number): Promise<Offer
   const seen = new Set<string>();
   const picked: Offer[] = [];
   for (const o of inBudget) {
-    const s = o.source.toLowerCase();
+    // "eBay - some_seller" and "eBay" count as the same store.
+    const s = o.source.split(" - ")[0].trim().toLowerCase();
     if (seen.has(s)) continue;
     seen.add(s);
     picked.push(o);
