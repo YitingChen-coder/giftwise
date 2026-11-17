@@ -4,7 +4,7 @@ AI gift ideas for U.S. holiday shoppers, plus live price comparison across retai
 
 **v1 core task:** say who the gift is for, your budget, and a bit about them → get 5 gift ideas within budget → tap one to compare real prices from different stores (each with store, price, link, and time checked) → refine the ideas in plain words if they're not right.
 
-- Live app: _added after deploy_
+- Live app: https://giftwise-fawn.vercel.app
 - Proposal: https://giftwise-project-proposal.vercel.app
 
 ## What's in v1, and what isn't
